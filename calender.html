@@ -52,7 +52,7 @@
     <div id="output">BOOM</div>
 
     date field <input type="text" id="inTest" onmousedown="opendatePicker(event);">
-    
+
     <div id="modal" class="modalClass" style="display:none;"></div>
     <script>
     //m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^
@@ -101,7 +101,11 @@
     iOffset = (7 - iOffset);
   //  console.log("iOffset POST:::", iOffset);
 
-    itotalDays += iOffset;
+      if (iOffset < 7) {//extra row fix
+          itotalDays += iOffset;
+      } else {
+          iOffset = 0;
+      }
 
       var idaysInMonth = 0;
 
@@ -129,6 +133,11 @@
     var istartDay = dthisCal.getDay();
     //console.log("istartDay:::", istartDay)
     dthisCal.setDate(dthisCal.getDate() - istartDay);
+
+    if (dthisDate.getMonth() === 2) {//fixes march overhang
+      iOffset -= 1;
+    }
+
     //console.log("call satart:::", dthisCal);
     dnextCal.setDate(dnextCal.getDate() + iOffset);
     //console.log("datePicker end date;;;;", dnextCal)
@@ -259,28 +268,24 @@
       document.getElementById("modal").innerHTML = '';
       document.getElementById("modal").style.display = "none";
     }
-});
+    });
 
-function returnDateFromString(sDate){
-    //only works with 24/04/2020 format
-  //  console.log("receiving date:::", sDate);
-    var dReturnDate = sDate;
-    var aSplitDate = sDate.split("/");
-    dReturnDate = new Date(aSplitDate[2], (aSplitDate[1] - 1), aSplitDate[0], 0, 0, 0, 0);
+    function returnDateFromString(sDate){
+        //only works with 24/04/2020 format
+      //  console.log("receiving date:::", sDate);
+        var dReturnDate = sDate;
+        var aSplitDate = sDate.split("/");
+        dReturnDate = new Date(aSplitDate[2], (aSplitDate[1] - 1), aSplitDate[0], 0, 0, 0, 0);
 
-    return dReturnDate;
-}
-function getSesult() {
-  return "Boom";
-}
-var test = (function getnnSesult() {
-  return "BoIIIom";
-})
+        return dReturnDate;
+    }
+    function getSesult() {
+      return "Boom";
+    }
+    var test = (function getnnSesult() {
+      return "BoIIIom";
+    })
 
-console.log("test;;", test);
     </script>
-
-
-
     </body>
     <html>
