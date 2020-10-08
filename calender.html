@@ -1,0 +1,286 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+          <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <style>
+        .holdingDiv {
+        width:98%;
+        text-align: center;
+        background-color:rgba(255,255,255,0.7);
+        padding:10px;
+        }
+        .headHoldingDiv {
+          display: flex;
+        }
+        .cellClass {
+          padding:10px;
+          border-radius:5px;
+          border-style: solid;
+          border-width:0.5px;
+          margin:3px;
+          box-sizing: border-box;
+        }
+        .cellHeadClass {
+          padding:10px;
+          margin:3px;
+          box-sizing: border-box;
+          text-transform: uppercase;
+        }
+        .clickedClass {
+          cursor:pointer;
+          background-color:red;
+        }
+        .modalClass{
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          z-index: 1000;
+          background-color: RGBA(0,0,0,0.7);
+          position:absolute;
+        }
+        .todayClass{
+          background-color:lightgreen;
+        }
+        .selectedClass {
+          background-color:orange;
+        }
+    	</style>
+    	</head>
+    <body>
+    <div id="output">BOOM</div>
+
+    date field <input type="text" id="inTest" onmousedown="opendatePicker(event);">
+    
+    <div id="modal" class="modalClass" style="display:none;"></div>
+    <script>
+    //m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^m00m m m0 0m0m m^
+    function drawdatePicker(newStart, oelement){
+    //  console.log('oelement;;', oelement)
+      var sHTML = ''
+
+      var dthisDate = new Date();//today!
+      if (newStart !== '') {//of the begining of the selected month
+        dthisDate = new Date(newStart);
+      }
+        dthisDate.setHours(0,0,0,0);
+  //    console.log('startdate:::', dthisDate);
+      //get fiorst day of month
+      var ithisDayOfWeek = dthisDate.getDay();
+      var iithisDay = dthisDate.getDate();
+      var ithisMonth = dthisDate.getMonth();
+      var ithisYear = dthisDate.getFullYear();
+
+      var sMonth = returnMonthByName(ithisMonth) //month by sName
+      var dTodaysDate = new Date();
+      dTodaysDate.setHours(0,0,0,0);
+      var dSelectedDate = document.getElementById(oelement).value;
+      if (dSelectedDate !== '') {
+        dSelectedDate = returnDateFromString(dSelectedDate);
+        dSelectedDate.setHours(0,0,0,0);
+    //    console.log("dSelectedDate RET;;;", dSelectedDate);
+      } else {
+        dSelectedDate = new Date();
+        dSelectedDate.setHours(0,0,0,0);
+    //    console.log("dSelectedDate RET;;;", dSelectedDate);
+      }
+
+  //    console.log('dSelectedDate:::', dSelectedDate);
+    //total number of days in the MONTH
+    //plus the star toffset
+    //pluss the end offset
+    //find datediff between 1st off currentmonth and ist of next MONTH
+    var dthisCal = new Date(ithisYear, ithisMonth, 1);//gets first day of month
+    var dnextCal = new Date(ithisYear, (ithisMonth *1 + 1), 1);//gets first day of next month
+    var iDateDiff = Math.floor((dnextCal - dthisCal) / (1000 * 60 * 60 * 24));//gets the number of days betweem
+
+    var itotalDays = ((ithisDayOfWeek * 1) + (iDateDiff * 1))
+    //find the remainder
+    iOffset = Math.floor(itotalDays % 7);
+    iOffset = (7 - iOffset);
+  //  console.log("iOffset POST:::", iOffset);
+
+    itotalDays += iOffset;
+
+      var idaysInMonth = 0;
+
+      var dlastMonth = new Date(dthisCal)
+          dlastMonth = new Date(dlastMonth.setMonth(dlastMonth.getMonth() - 1));
+
+      var iCalRow = 0;
+        sHTML += `<div class='holdingDiv' id="divCalHeader" value=\"` + oelement + `\">
+                    <div style=\"display: flex;\">
+                      <div style=\"flex:1;\" onClick=\"drawdatePicker('` + dlastMonth + `','` + oelement + `');\"><i class=\"material-icons materialExtra\">fast_rewind</i></div>
+                        <div style=\"flex:5;text-transform:uppercase;\">` + sMonth + ` ` + ithisYear + `</div>
+                      <div style=\"flex:1;\" onClick=\"drawdatePicker('` + dnextCal + `','` + oelement + `');\"><i class=\"material-icons materialExtra\">fast_forward</i></div>
+                    </div>
+                    <div style=\"display: flex;\">
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">sun</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">mon</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">tue</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">wed</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">thu</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">fri</div>
+                      <div style=\"flex:1;\" class=\"cellHeadClass\">sat</div>
+                    </div>`
+                  //2 element, the day of the week and the date of the week
+
+    var istartDay = dthisCal.getDay();
+    //console.log("istartDay:::", istartDay)
+    dthisCal.setDate(dthisCal.getDate() - istartDay);
+    //console.log("call satart:::", dthisCal);
+    dnextCal.setDate(dnextCal.getDate() + iOffset);
+    //console.log("datePicker end date;;;;", dnextCal)
+
+    var dstartLoop = new Date(dthisCal);
+    var dendLoop = new Date(dnextCal);
+
+  //  console.log("dstartLoop::", dstartLoop + "  dendLoop::", dendLoop);
+            while (dstartLoop < dendLoop) {
+                var stDate = (`0` + dstartLoop.getDate());
+                    stDate = (`0` + dstartLoop.getDate()).substring(stDate.length - 2, stDate.length);
+                      if (iCalRow === 0) {
+                        sHTML += `<div style='display:flex;'>`;
+                      }
+                      var oData = {date:dstartLoop.getDate(), month:dstartLoop.getMonth(), year:dstartLoop.getFullYear()}
+                        //just display the days of the month
+                      sHTML += `<div style=\"flex:1;padding:10px;\"`
+                        if (dstartLoop.getMonth() === ithisMonth) {
+
+
+                            sHTML += ` class=\"cellClass clickedClass `
+                            //if dstartLoop = today add todayClass
+                          //  console.log("dstartLoop;;", (dstartLoop.getDate() + `-` + dstartLoop.getMonth() + `-` + dstartLoop.getFullYear()), ' === ', (dthisDate.getDate() + `-` + dthisDate.getMonth() + `-` + dthisDate.getFullYear()))
+                           if ((dstartLoop.getDate() + `-` + dstartLoop.getMonth() + `-` + dstartLoop.getFullYear()) === (dSelectedDate.getDate() + `-` + dSelectedDate.getMonth() + `-` + dSelectedDate.getFullYear())) {
+                              sHTML += `selectedClass `
+                            } //add selectedClass
+                            if ((dstartLoop.getDate() + `-` + dstartLoop.getMonth() + `-` + dstartLoop.getFullYear()) === (dTodaysDate.getDate() + `-` + dTodaysDate.getMonth() + `-` + dTodaysDate.getFullYear())) {
+                             sHTML += `todayClass `
+                            } //add selectedClass
+                              sHTML += `\" value='` + JSON.stringify(oData) + `'>` + stDate;
+                        } else {
+                            sHTML += ` class=\"cellClass\">` + stDate;
+                        }
+                            sHTML += `</div>`
+
+                      if (iCalRow === 6) {
+                        sHTML += `</div>`;
+                      }
+                      iCalRow += 1;
+                      if (iCalRow === 7) {
+                        iCalRow = 0;
+                      }
+                    dstartLoop = new Date(dstartLoop.setDate(dstartLoop.getDate() + 1 * 1));
+                  }
+
+                  `</div>`
+
+              //  document.getElementById("output").innerHTML = sHTML;
+          document.querySelector('.modalClass').innerHTML = sHTML;
+
+    }
+    function returnMonthByName(monthNo) {
+
+    var sReturnMonth = '';
+      switch(monthNo) {
+      case 0:
+        sReturnMonth = 'january';
+        break;
+        case 1:
+        sReturnMonth = 'february';
+        break;
+        case 2:
+        sReturnMonth = 'march';
+        break;
+        case 3:
+        sReturnMonth = 'april';
+        break;
+        case 4:
+        sReturnMonth = 'may';
+        break;
+        case 5:
+        sReturnMonth = 'june';
+        break;
+        case 6:
+        sReturnMonth = 'july';
+        break;
+        case 7:
+        sReturnMonth = 'august';
+        break;
+        case 8:
+        sReturnMonth = 'september';
+        break;
+        case 9:
+        sReturnMonth = 'october';
+        break;
+        case 10:
+        sReturnMonth = 'november';
+        break;
+        case 11:
+        sReturnMonth = 'december';
+        break;
+        default:
+        sReturnMonth = 'january';
+      }
+      return sReturnMonth;
+    }
+    var odatePicker;
+    function opendatePicker(event) {
+      var oTarget = event.target;
+      var dCurrentDate = oTarget.value;//will be nothing of a string format mm/dd/yyyy
+        if (dCurrentDate === '') {//sets 1st of today
+          dCurrentDate = new Date();
+          dCurrentDate.setHours(0,0,0,0);
+          dCurrentDate.setDate(1);
+      //    console.log('blank date;;', dCurrentDate)
+        } else {
+            //make the string into a date object
+          dCurrentDate = new Date(returnDateFromString(dCurrentDate));
+          dCurrentDate.setHours(0,0,0,0);
+          dCurrentDate.setDate(1);
+      //    console.log("recreated returned date;;;", dCurrentDate);
+        }
+
+      document.querySelector('.modalClass').style.display = 'block';
+    //  console.log("booom:::", oTarget, "  dCurrentDate:::", dCurrentDate);
+      drawdatePicker(dCurrentDate, oTarget.id);
+    }
+    document.addEventListener("click", function (event) {
+  //  console.log("in click ", event.target);
+    if (event.target.className.includes('clickedClass')) {
+      sDateOfMonth = event.target.innerHTML;
+      event.target.className = 'clickedClass'
+      oData = JSON.parse(event.target.attributes[2].value);
+    //  oData = oData.replace(/\\/g, "");
+    var oReturnTo = document.getElementById("divCalHeader").attributes[2].value;
+    //  console.log("callernder clicked:::", oData, " oReturnTo::", oReturnTo);
+      document.getElementById(oReturnTo).value = oData.date + "/" + (oData.month + 1 * 1) + "/" + oData.year;
+      document.getElementById("modal").innerHTML = '';
+      document.getElementById("modal").style.display = "none";
+    }
+});
+
+function returnDateFromString(sDate){
+    //only works with 24/04/2020 format
+  //  console.log("receiving date:::", sDate);
+    var dReturnDate = sDate;
+    var aSplitDate = sDate.split("/");
+    dReturnDate = new Date(aSplitDate[2], (aSplitDate[1] - 1), aSplitDate[0], 0, 0, 0, 0);
+
+    return dReturnDate;
+}
+function getSesult() {
+  return "Boom";
+}
+var test = (function getnnSesult() {
+  return "BoIIIom";
+})
+
+console.log("test;;", test);
+    </script>
+
+
+
+    </body>
+    <html>
